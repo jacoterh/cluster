@@ -1,0 +1,30 @@
+# usage: condor_submit run=runcard.yml n3fit.submit
+
+rep_min = 1
+rep_max = 120
+fits_path = /data/theorie/jthoeve/physics_projects/nnpdf_fits
+
+fit_name  = $SUBSTR(run, 0, -4)
+
+executable = /data/theorie/jthoeve/physics_projects/nnpdf_fits/scripts/exec_n3fit_exit0.sh
+arguments  = $(fits_path)/runcards/$(fit_name).yml $(item) -o $(fits_path)/results/$(fit_name) --no-net
+
+output = $(fits_path)/logs/n3fit-$(fit_name)-$(item).out
+error  = $(fits_path)/logs/n3fit-$(fit_name)-$(item).err
+log    = $(fits_path)/logs/n3fit-$(fit_name)-$(item).log
+
+request_cpus   = 4
+request_memory = 15G
+
+# if time limit is reached, retry
+# max_retries = 6
+
+# when_to_transfer_output = on_exit
++JobCategory            = "medium"
++UseOS                  = "el9"
+accounting_group 	= smefit
+
+# limit the number of idle jobs, meaning no jobs are sumitted to the queue if ther eare already max_idle jobs waiting. This was requested by Jeff Templon and I suspect is because the condor queue mananement software is burdended by having many jobs to analyze
+# https://mattermost.nikhef.nl/nikhef-members/pl/zprdpsy5y3gntct9ypjsgb8ssc
+max_idle = 20
+queue from seq $(rep_min) $(rep_max) |

@@ -1,0 +1,31 @@
+#!/bin/sh
+# usage: conda activate nnpdf && condor_submit current=current reference=reference comparefits.submit
+
+# Set the path to the executable
+executable = /project/theorie/jthoeve/miniconda3/envs/nnpdf_dev/bin/vp-comparefits
+getenv = true
+
+# Set the arguments for the executable
+arguments = " --title Comparison-between-$(current)-and-$(reference) --keywords 'legacy' 'new_commondata' --output /data/theorie/jthoeve/physics_projects/nnpdf_reports/$(current)_VS_$(reference) --author Jaco-ter-Hoeve --thcovmat_if_present $(current) $(reference)"
+
+output = /data/theorie/jthoeve/physics_projects/nnpdf_reports/$(current)_VS_$(reference).out
+error  = /data/theorie/jthoeve/physics_projects/nnpdf_reports/$(current)_VS_$(reference).err
+log    = /data/theorie/jthoeve/physics_projects/nnpdf_reports/$(current)_VS_$(reference).log
+
+# Specify the notification setting
+notification = Complete
+
+# Request resources
+request_cpus   = 1
+request_memory = 64G
+
+# Set the condition for transferring output files
+when_to_transfer_output = on_exit
+
+# Additional job attributes
++JobCategory            = "medium"
++UseOS                  = "el9"
+
+# Queue the job
+queue
+

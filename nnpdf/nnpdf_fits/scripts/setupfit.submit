@@ -1,0 +1,22 @@
+# usage: condor_submit run=runcard.yml setupfit.submit
+
+fits_path = /data/theorie/jthoeve/physics_projects/nnpdf_fits
+
+fit_name  = $SUBSTR(run, 0, -4)
+
+executable = /project/theorie/jthoeve/miniconda3/envs/nnpdf_dev/bin/vp-setupfit
+arguments  = $(fits_path)/runcards/$(fit_name).yml -o $(fits_path)/results/$(fit_name) --no-net
+
+output = $(fits_path)/logs/setupfit-$(fit_name).out
+error  = $(fits_path)/logs/setupfit-$(fit_name).err
+log    = $(fits_path)/logs/setupfit-$(fit_name).log
+
+request_cpus   = 1
+request_memory = 4G
+
++JobCategory            = "short"
++UseOS                  = "el9"
+accounting_group 	      = smefit
+
+queue
+

@@ -1,0 +1,14 @@
+# usage: condor_submit_dag workflow.dag
+
+JOB setup fitname-setupfit.submit
+JOB fit fitname-n3fit.submit
+JOB evolve fitname-evolven3fit.submit
+VARS setup run="runcardname"
+VARS fit run="runcardname"
+VARS evolve run="runcardname"
+
+PARENT setup CHILD fit
+PARENT fit CHILD evolve
+
+# to set the DAGMAN_MAX_JOBS_IDLE key, since -maxidle and -MaxIdle don't work...
+CONFIG /data/theorie/jthoeve/physics_projects/nnpdf_fits/scripts/dagman.config

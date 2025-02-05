@@ -1,0 +1,27 @@
+# usage: condor_submit run=runcard.yml evolve.submit
+
+fits_path = /data/theorie/jthoeve/physics_projects/nnpdf_fits/
+
+fit_name  = $SUBSTR(run, 0, -4)
+
+executable = /project/theorie/jthoeve/miniconda3/envs/nnpdf_dev/bin/evolven3fit
+arguments  = evolve --force $(fits_path)/results/$(fit_name)
+
+output = $(fits_path)/logs/evolven3fit-$(fit_name).out
+error  = $(fits_path)/logs/evolven3fit-$(fit_name).out
+log    = $(fits_path)/logs/evolven3fit-$(fit_name).out
+
+#notification = Complete
+
+request_cpus   = 8
+request_memory = 64G
+
+# if time limit is reached, retry
+max_retries = 3
+
+# when_to_transfer_output = on_exit
++JobCategory            = "medium"
++UseOS                  = "el9"
+accounting_group 	= smefit
+
+queue

@@ -1,0 +1,21 @@
+executable   = /project/theorie/jthoeve/miniconda3/envs/pinefarm/bin/pineko
+arguments    = theory -c /data/theorie/jthoeve/physics_projects/theories_slim/pineko.toml ekos $(TH) $(DATASET)
+
+output       = /data/theorie/jthoeve/physics_projects/theories_slim/logs/$(TH)-$(DATASET).out
+error        = /data/theorie/jthoeve/physics_projects/theories_slim/logs/$(TH)-$(DATASET).err
+log          = /data/theorie/jthoeve/physics_projects/theories_slim/logs/$(TH)-$(DATASET).log
+
+request_cpus   = 32
+request_memory = 50G
+request_disk   = 8G
+max_retries    = 1
+
++JobCategory            = "medium"
++UseOS                  = "el9"
+accounting_group        = smefit
+
+#queue
+
+# uncomment below to submit a cluster of jobs. Add TH and DATASET to eko_list.txt on a new line. Usage: condor_submit condor_ekos.submit
+max_idle = 20
+queue TH, DATASET from eko_list.txt
