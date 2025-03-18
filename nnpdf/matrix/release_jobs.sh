@@ -39,6 +39,7 @@ while true; do
           # modify resources and release job depending on the hold reason
           if [[ $holdreason == *"MaxWallTime"* ]]; then
               echo "Job exceed max walltime, resubmitting on long"
+              condor_qedit "$job" JobCategory "long"
               condor_qedit "$job" MaxWallTime 345600
               condor_qedit "$job" JobCategoryDefaultWallTime 345600
               condor_qedit "$job" JobCategoryMaxWallTime 345600
