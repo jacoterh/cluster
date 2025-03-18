@@ -1,6 +1,7 @@
 The distributions and dddistributions include all the implemented distributions as of 18-03-2025.
 
 The model runcard uses values from PDG and as agreed upon in the theory settings.
+It currently uses tha top mass of 172.5. For grids with varied mass, modify this accordingly.
 
 The parameter runcard seeks a precision of 0.02%.
 
