@@ -1,0 +1,7 @@
+The distributions and dddistributions include all the implemented distributions as of 18-03-2025.
+
+The model runcard uses values from PDG and as agreed upon in the theory settings.
+
+The parameter runcard seeks a precision of 0.02%.
+
+The scale choices include a custom choice (70) which uses the H_T/4 where the mass of top is fixed to 172.5 GeV.
