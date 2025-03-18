@@ -88,7 +88,7 @@ particle 1       = atop 1
 binningtype      = irregular
 edges            = 250:400:480:560:640:720:800:900:1000:1150:1300:1500:1700:2000:2300:3500
 
-distributionname = CMS_TTBAR_13TEV_LJ_DIF_MTTBAR
+distributionname = CMS_TTBAR_13TEV_LJ_DIF_YTTBAR
 distributiontype = absy
 particle 1       = top 1
 particle 1       = atop 1
