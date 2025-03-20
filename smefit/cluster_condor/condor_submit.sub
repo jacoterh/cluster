@@ -15,7 +15,7 @@ request_memory = 4024M
 ## SingularityImage but an OS must be specified and in string quotations.
 +UseOS                  = "el9"
 ## This job can run up to 4 hours. Can choose "express", "short", "medium", or "long".
-+JobCategory            = "short"
++JobCategory            = "long"
 
 #+MaxWallTime = 24 * 3600
 
