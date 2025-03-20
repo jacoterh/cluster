@@ -30,8 +30,11 @@ while true; do
           trimmed_path="${trimmed_path#\"}"
 
           execution_dir="$trimmed_path/execution"
-          rm $execution_dir/*
-          echo "Removed all files in $execution_dir"
+
+          channel=$(echo $userlog | awk -F'log/|_try' '{print $2}')
+
+          rm "$execution_dir/execution_$channel.dat"
+          echo "Removed $execution_dir/execution_$channel.dat"
 
           # find the hold reason
           holdreason=$(condor_q -long $job | grep "HoldReason =")
@@ -50,12 +53,12 @@ while true; do
               memory=$(condor_q -long $job | grep "RequestMemory =" | awk '{print $3}')
 
               # increment memory by 2gb
-              new_memory=$((memory + 2048))
+              new_memory=$((memory + 4096))
 
-              # if new_memory is greater than 32gb, continue
-              if [[ $new_memory -lt 32768 ]]; then
+              # if new_memory is greater than 256gb, continue
+              if [[ $new_memory -lt 262144 ]]; then
                   echo "Setting memory to $new_memory"
-                  condor_qedit "$job" RequestMemory new_memory
+                  condor_qedit "$job" RequestMemory $new_memory
               else
                   echo "Job exceeds max memory, skipping the release of this job"
                   continue  # skip to next job
@@ -68,7 +71,7 @@ while true; do
       fi
 
   done
-  sleep 10
+  sleep 600
 done
 # TO PUT JOBS ON HOLD
 
