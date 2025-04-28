@@ -200,16 +200,17 @@ def process_8():
 
     # CMS_TTBAR_8TEV_LJ_DIF_YTTBAR (catr)
     input_path = input + "/CMS_TTBAR_8TEV_LJ_DIF_YTTBAR_catr" + matrix_suffix
+
     intermediate_path = (
-        output + "/CMS_TTBAR_8TEV_LJ_DIF_YTTBAR_intermediate" + new_suffix
+        output + "/CMS_TTBAR_8TEV_LJ_DIF_YTTBAR_intermediate"
     )
     output_path = output + "/CMS_TTBAR_8TEV_LJ_DIF_YTTBAR" + new_suffix
     if os.path.exists(input_path):
         subprocess.run(
             ["python", "./matrix_yttbar.py", "-g", input_path, "-o", intermediate_path]
         )
-        subprocess.run(default + yttbar + [intermediate_path, output_path])
-        subprocess.run(["rm", intermediate_path])
+        subprocess.run(default + yttbar + [intermediate_path + new_suffix, output_path])
+        subprocess.run(["rm", intermediate_path + new_suffix])
     else:
         gnf8.append(input_path)
 
