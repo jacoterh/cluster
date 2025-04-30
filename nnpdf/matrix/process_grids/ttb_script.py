@@ -137,68 +137,107 @@ new_suffix = ".pineappl.lz4"
 
 gnf8, gnf13 = [], []
 
+def integrate_grid(grid_path, type):
+    if type == '1d':
+        bins = subprocess.run(["pineappl", "read", "-b", grid_path], capture_output=True, text=True)
+        n_bins = len(bins.stdout.splitlines()) - 2 
+        bin_range = '0-'+str(n_bins-1)
+        output_grid_path = grid_path.replace(".pineappl.lz4", "-INTEGRATED.pineappl.lz4")
+        subprocess.run(["pineappl", "write", "--merge-bins", bin_range, "--remap", "0,1", grid_path, output_grid_path])
+
+    elif type == '2d':
+        bins = subprocess.run(["pineappl", "read", "-b", grid_path], capture_output=True, text=True)
+        n_bins = len(bins.stdout.splitlines()) - 2
+        bin_range = '0-'+str(n_bins-1)
+        remap_string = ""
+        for i in range(n_bins+1):
+            remap_string += str(i) + ","
+        remap_string = remap_string[:-1]
+        intermediate_grid_path = grid_path.replace(".pineappl.lz4", "-temp.pineappl.lz4")
+        output_grid_path = grid_path.replace(".pineappl.lz4", "-INTEGRATED.pineappl.lz4")
+        subprocess.run(["pineappl", "write", "--remap", remap_string, grid_path, intermediate_grid_path])
+        subprocess.run(["pineappl", "write", "--merge-bins", bin_range, "--remap", "0,1", intermediate_grid_path, output_grid_path])
+        subprocess.run(["rm", intermediate_grid_path])
+    else:
+        print("Invalid type specified. Please use '1d' or '2d'.")
+
 
 def process_8():
 
     ################# 1D distributions
 
     # ATLAS_TTBAR_8TEV_2L_DIF_MTTBAR
+    print("processing ATLAS_TTBAR_8TEV_2L_DIF_MTTBAR")
     input_path = input + "/ATLAS_TTBAR_8TEV_2L_DIF_MTTBAR" + matrix_suffix
     output_path = output + "/ATLAS_TTBAR_8TEV_2L_DIF_MTTBAR" + new_suffix
     if os.path.exists(input_path):
         subprocess.run(default + mttb + [input_path, output_path])
+        integrate_grid(output_path, '1d')
     else:
         gnf8.append(input_path)
 
     # ATLAS_TTBAR_8TEV_2L_DIF_YTTBAR
+    print("processing ATLAS_TTBAR_8TEV_2L_DIF_YTTBAR")
     input_path = input + "/ATLAS_TTBAR_8TEV_2L_DIF_YTTBAR" + matrix_suffix
     output_path = output + "/ATLAS_TTBAR_8TEV_2L_DIF_YTTBAR" + new_suffix
     if os.path.exists(input_path):
         subprocess.run(default + absyttbar + [input_path, output_path])
+        integrate_grid(output_path, '1d')
     else:
         gnf8.append(input_path)
 
     # ATLAS_TTBAR_8TEV_LJ_DIF_MTTBAR
+    print("processing ATLAS_TTBAR_8TEV_LJ_DIF_MTTBAR")
     input_path = input + "/ATLAS_TTBAR_8TEV_LJ_DIF_MTTBAR" + matrix_suffix
     output_path = output + "/ATLAS_TTBAR_8TEV_LJ_DIF_MTTBAR" + new_suffix
     if os.path.exists(input_path):
         subprocess.run(default + mttb + [input_path, output_path])
+        integrate_grid(output_path, '1d')
     else:
         gnf8.append(input_path)
 
     # ATLAS_TTBAR_8TEV_LJ_DIF_YTTBAR
+    print("processing ATLAS_TTBAR_8TEV_LJ_DIF_YTTBAR")
     input_path = input + "/ATLAS_TTBAR_8TEV_LJ_DIF_YTTBAR" + matrix_suffix
     output_path = output + "/ATLAS_TTBAR_8TEV_LJ_DIF_YTTBAR" + new_suffix
     if os.path.exists(input_path):
         subprocess.run(default + absyttbar + [input_path, output_path])
+        integrate_grid(output_path, '1d')
     else:
         gnf8.append(input_path)
 
     # ATLAS_TTBAR_8TEV_LJ_DIF_YT
+    print("processing ATLAS_TTBAR_8TEV_LJ_DIF_YT")
     input_path = input + "/ATLAS_TTBAR_8TEV_LJ_DIF_YT" + matrix_suffix
     output_path = output + "/ATLAS_TTBAR_8TEV_LJ_DIF_YT" + new_suffix
     if os.path.exists(input_path):
         subprocess.run(default + absyt + [input_path, output_path])
+        integrate_grid(output_path, '1d')
     else:
         gnf8.append(input_path)
 
     # ATLAS_TTBAR_8TEV_LJ_DIF_PTT
+    print("processing ATLAS_TTBAR_8TEV_LJ_DIF_PTT")
     input_path = input + "/ATLAS_TTBAR_8TEV_LJ_DIF_PTT" + matrix_suffix
     output_path = output + "/ATLAS_TTBAR_8TEV_LJ_DIF_PTT" + new_suffix
     if os.path.exists(input_path):
         subprocess.run(default + ptt + [input_path, output_path])
+        integrate_grid(output_path, '1d')
     else:
         gnf8.append(input_path)
 
     # CMS_TTBAR_8TEV_LJ_DIF_MTTBAR
+    print("processing CMS_TTBAR_8TEV_LJ_DIF_MTTBAR")
     input_path = input + "/CMS_TTBAR_8TEV_LJ_DIF_MTTBAR" + matrix_suffix
     output_path = output + "/CMS_TTBAR_8TEV_LJ_DIF_MTTBAR" + new_suffix
     if os.path.exists(input_path):
         subprocess.run(default + mttb + [input_path, output_path])
+        integrate_grid(output_path, '1d')
     else:
         gnf8.append(input_path)
 
     # CMS_TTBAR_8TEV_LJ_DIF_YTTBAR (catr)
+    print("processing CMS_TTBAR_8TEV_LJ_DIF_YTTBAR")
     input_path = input + "/CMS_TTBAR_8TEV_LJ_DIF_YTTBAR_catr" + matrix_suffix
 
     intermediate_path = (
@@ -211,28 +250,34 @@ def process_8():
         )
         subprocess.run(default + yttbar + [intermediate_path + new_suffix, output_path])
         subprocess.run(["rm", intermediate_path + new_suffix])
+        # integrate_grid(output_path, '1d')
     else:
         gnf8.append(input_path)
 
     # CMS_TTBAR_8TEV_LJ_DIF_YT
+    print("processing CMS_TTBAR_8TEV_LJ_DIF_YT")
     input_path = input + "/CMS_TTBAR_8TEV_LJ_DIF_YT" + matrix_suffix
     output_path = output + "/CMS_TTBAR_8TEV_LJ_DIF_YT" + new_suffix
     if os.path.exists(input_path):
         subprocess.run(default + yt + [input_path, output_path])
+        integrate_grid(output_path, '1d')
     else:
         gnf8.append(input_path)
 
     # CMS_TTBAR_8TEV_LJ_DIF_PTT
+    print("processing CMS_TTBAR_8TEV_LJ_DIF_PTT")
     input_path = input + "/CMS_TTBAR_8TEV_LJ_DIF_PTT" + matrix_suffix
     output_path = output + "/CMS_TTBAR_8TEV_LJ_DIF_PTT" + new_suffix
     if os.path.exists(input_path):
         subprocess.run(default + ptt + [input_path, output_path])
+        integrate_grid(output_path, '1d')
     else:
         gnf8.append(input_path)
 
     ################# 2D distributions
 
     # CMS_TTBAR_8TEV_2L_DIF_PTT-YT
+    print("processing CMS_TTBAR_8TEV_2L_DIF_PTT-YT")
     input_path = input + "/CMS_TTBAR_8TEV_2L_DIF_PTT-YT" + matrix_suffix
     output_path = output + "/CMS_TTBAR_8TEV_2L_DIF_PTT-YT" + new_suffix
     if os.path.exists(input_path):
@@ -273,10 +318,12 @@ def process_8():
             ]
             + [input_path, output_path]
         )
+        integrate_grid(output_path, '2d')
     else:
         gnf8.append(input_path)
 
     # CMS_TTBAR_8TEV_2L_DIF_MTTBAR-YT
+    print("processing CMS_TTBAR_8TEV_2L_DIF_MTTBAR-YT")
     input_path = input + "/CMS_TTBAR_8TEV_2L_DIF_MTTBAR-YT" + matrix_suffix
     output_path = output + "/CMS_TTBAR_8TEV_2L_DIF_MTTBAR-YT" + new_suffix
     if os.path.exists(input_path):
@@ -317,10 +364,12 @@ def process_8():
             ]
             + [input_path, output_path]
         )
+        integrate_grid(output_path, '2d')
     else:
         gnf8.append(input_path)
 
     # CMS_TTBAR_8TEV_2L_DIF_MTTBAR-YTTBAR
+    print("processing CMS_TTBAR_8TEV_2L_DIF_MTTBAR-YTTBAR")
     input_path = input + "/CMS_TTBAR_8TEV_2L_DIF_MTTBAR-YTTBAR" + matrix_suffix
     output_path = output + "/CMS_TTBAR_8TEV_2L_DIF_MTTBAR-YTTBAR" + new_suffix
     if os.path.exists(input_path):
@@ -361,6 +410,7 @@ def process_8():
             ]
             + [input_path, output_path]
         )
+        integrate_grid(output_path, '2d')
     else:
         gnf8.append(input_path)
 
@@ -376,6 +426,163 @@ def process_8():
 
 
 def process_13():
+
+    ################# 1D distributions
+
+    # ATLAS_TTBAR_13TEV_LJ_DIF_MTTBAR
+    print("processing ATLAS_TTBAR_13TEV_LJ_DIF_MTTBAR")
+    input_path = input + "/ATLAS_TTBAR_13TEV_LJ_DIF_MTTBAR" + matrix_suffix
+    output_path = output + "/ATLAS_TTBAR_13TEV_LJ_DIF_MTTBAR" + new_suffix
+    if os.path.exists(input_path):
+        subprocess.run(default + mttb + [input_path, output_path])
+        integrate_grid(output_path, '1d')
+    else:
+        gnf13.append(input_path)
+
+    # ATLAS_TTBAR_13TEV_LJ_DIF_PTT
+    print("processing ATLAS_TTBAR_13TEV_LJ_DIF_PTT")
+    input_path = input + "/ATLAS_TTBAR_13TEV_LJ_DIF_PTT" + matrix_suffix
+    output_path = output + "/ATLAS_TTBAR_13TEV_LJ_DIF_PTT" + new_suffix
+    if os.path.exists(input_path):
+        subprocess.run(default + ptt + [input_path, output_path])
+        integrate_grid(output_path, '1d')
+    else:
+        gnf13.append(input_path)
+
+    # ATLAS_TTBAR_13TEV_LJ_DIF_YT
+    print("processing ATLAS_TTBAR_13TEV_LJ_DIF_YT")
+    input_path = input + "/ATLAS_TTBAR_13TEV_LJ_DIF_YT" + matrix_suffix
+    output_path = output + "/ATLAS_TTBAR_13TEV_LJ_DIF_YT" + new_suffix
+    if os.path.exists(input_path):
+        subprocess.run(default + yt + [input_path, output_path])
+        integrate_grid(output_path, '1d')
+    else:
+        gnf13.append(input_path)
+
+    # ATLAS_TTBAR_13TEV_LJ_DIF_YTTBAR
+    print("processing ATLAS_TTBAR_13TEV_LJ_DIF_YTTBAR")
+    input_path = input + "/ATLAS_TTBAR_13TEV_LJ_DIF_YTTBAR" + matrix_suffix
+    output_path = output + "/ATLAS_TTBAR_13TEV_LJ_DIF_YTTBAR" + new_suffix
+    if os.path.exists(input_path):
+        subprocess.run(default + yttbar + [input_path, output_path])
+        integrate_grid(output_path, '1d')
+    else:
+        gnf13.append(input_path)
+
+    # ATLAS_TTBAR_13TEV_HADR_DIF_MTTBAR
+    print("processing ATLAS_TTBAR_13TEV_HADR_DIF_MTTBAR")
+    input_path = input + "/ATLAS_TTBAR_13TEV_HADR_DIF_MTTBAR" + matrix_suffix
+    output_path = output + "/ATLAS_TTBAR_13TEV_HADR_DIF_MTTBAR" + new_suffix
+    if os.path.exists(input_path):
+        subprocess.run(default + mttb + [input_path, output_path])
+        integrate_grid(output_path, '1d')
+    else:
+        gnf13.append(input_path)
+
+    # ATLAS_TTBAR_13TEV_HADR_DIF_YTTBAR
+    print("processing ATLAS_TTBAR_13TEV_HADR_DIF_YTTBAR")
+    input_path = input + "/ATLAS_TTBAR_13TEV_HADR_DIF_YTTBAR" + matrix_suffix
+    output_path = output + "/ATLAS_TTBAR_13TEV_HADR_DIF_YTTBAR" + new_suffix
+    if os.path.exists(input_path):
+        subprocess.run(default + yttbar + [input_path, output_path])
+        integrate_grid(output_path, '1d')
+    else:
+        gnf13.append(input_path)
+
+    # CMS_TTBAR_13TEV_2L_DIF_MTTBAR
+    print("processing CMS_TTBAR_13TEV_2L_DIF_MTTBAR")
+    input_path = input + "/CMS_TTBAR_13TEV_2L_DIF_MTTBAR" + matrix_suffix
+    output_path = output + "/CMS_TTBAR_13TEV_2L_DIF_MTTBAR" + new_suffix
+    if os.path.exists(input_path):
+        subprocess.run(default + mttb + [input_path, output_path])
+        integrate_grid(output_path, '1d')
+    else:
+        gnf13.append(input_path)
+
+    # CMS_TTBAR_13TEV_2L_DIF_YTTBAR (catr)
+    print("processing CMS_TTBAR_13TEV_2L_DIF_YTTBAR")
+    input_path = input + "/CMS_TTBAR_13TEV_2L_DIF_YTTBAR_catr" + matrix_suffix
+    intermediate_path = (
+        output + "/CMS_TTBAR_13TEV_2L_DIF_YTTBAR_intermediate"
+    )
+    output_path = output + "/CMS_TTBAR_13TEV_2L_DIF_YTTBAR" + new_suffix
+    if os.path.exists(input_path):
+        subprocess.run(
+            ["python", "./matrix_yttbar.py", "-g", input_path, "-o", intermediate_path]
+        )
+        subprocess.run(default + yttbar + [intermediate_path + new_suffix, output_path])
+        subprocess.run(["rm", intermediate_path + new_suffix])
+        # integrate_grid(output_path, '1d')
+    else:
+        gnf13.append(input_path)
+
+    # CMS_TTBAR_13TEV_2L_DIF_YT
+    print("processing CMS_TTBAR_13TEV_2L_DIF_YT")
+    input_path = input + "/CMS_TTBAR_13TEV_2L_DIF_YT" + matrix_suffix
+    output_path = output + "/CMS_TTBAR_13TEV_2L_DIF_YT" + new_suffix
+    if os.path.exists(input_path):
+        subprocess.run(default + yt + [input_path, output_path])
+        integrate_grid(output_path, '1d')
+    else:
+        gnf13.append(input_path)
+
+    # CMS_TTBAR_13TEV_2L_DIF_PTT
+    print("processing CMS_TTBAR_13TEV_2L_DIF_PTT")
+    input_path = input + "/CMS_TTBAR_13TEV_2L_DIF_PTT" + matrix_suffix
+    output_path = output + "/CMS_TTBAR_13TEV_2L_DIF_PTT" + new_suffix
+    if os.path.exists(input_path):
+        subprocess.run(default + ptt + [input_path, output_path])
+        integrate_grid(output_path, '1d')
+    else:
+        gnf13.append(input_path)
+
+    # CMS_TTBAR_13TEV_LJ_DIF_MTTBAR
+    print("processing CMS_TTBAR_13TEV_LJ_DIF_MTTBAR")
+    input_path = input + "/CMS_TTBAR_13TEV_LJ_DIF_MTTBAR" + matrix_suffix
+    output_path = output + "/CMS_TTBAR_13TEV_LJ_DIF_MTTBAR" + new_suffix
+    if os.path.exists(input_path):
+        subprocess.run(default + mttb + [input_path, output_path])
+        integrate_grid(output_path, '1d')
+    else:
+        gnf13.append(input_path)
+
+    # CMS_TTBAR_13TEV_LJ_DIF_YTTBAR
+    print("processing CMS_TTBAR_13TEV_LJ_DIF_YTTBAR")
+    input_path = input + "/CMS_TTBAR_13TEV_LJ_DIF_YTTBAR" + matrix_suffix
+    output_path = output + "/CMS_TTBAR_13TEV_LJ_DIF_YTTBAR" + new_suffix
+    if os.path.exists(input_path):
+        subprocess.run(default + yttbar + [input_path, output_path])
+        integrate_grid(output_path, '1d')
+    else:
+        gnf13.append(input_path)
+
+    # CMS_TTBAR_13TEV_LJ_DIF_YT
+    print("processing CMS_TTBAR_13TEV_LJ_DIF_YT")
+    input_path = input + "/CMS_TTBAR_13TEV_LJ_DIF_YT" + matrix_suffix
+    output_path = output + "/CMS_TTBAR_13TEV_LJ_DIF_YT" + new_suffix
+    if os.path.exists(input_path):
+        subprocess.run(default + yt + [input_path, output_path])
+        integrate_grid(output_path, '1d')
+    else:
+        gnf13.append(input_path)
+
+    # CMS_TTBAR_13TEV_LJ_DIF_PTT
+    print("processing CMS_TTBAR_13TEV_LJ_DIF_PTT")
+    input_path = input + "/CMS_TTBAR_13TEV_LJ_DIF_PTT" + matrix_suffix
+    output_path = output + "/CMS_TTBAR_13TEV_LJ_DIF_PTT" + new_suffix
+    if os.path.exists(input_path):
+        subprocess.run(default + ptt + [input_path, output_path])
+        integrate_grid(output_path, '1d')
+    else:
+        gnf13.append(input_path)
+
+    ################# 2D distributions
+
+    # ATLAS_TTBAR_13TEV_LJ_DIF_PTT-YT
+    # ATLAS_TTBAR_13TEV_LJ_DIF_MTTBAR-PTT
+    # ATLAS_TTBAR_13TEV_HADR_DIF_MTTBAR-YTTBAR
+    # CMS_TTBAR_13TEV_LJ_DIF_MTTBAR-YTTBAR
+
     return
 
 
