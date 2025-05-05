@@ -245,12 +245,17 @@ def process_8():
     )
     output_path = output + "/CMS_TTBAR_8TEV_LJ_DIF_YTTBAR" + new_suffix
     if os.path.exists(input_path):
+
+        subprocess.run(default + yttbar + [input_path, output_path])
+        integrate_grid(output_path, '1d')
+        subprocess.run(["rm", output_path])
+
         subprocess.run(
             ["python", "./matrix_yttbar.py", "-g", input_path, "-o", intermediate_path]
         )
         subprocess.run(default + yttbar + [intermediate_path + new_suffix, output_path])
         subprocess.run(["rm", intermediate_path + new_suffix])
-        # integrate_grid(output_path, '1d')
+
     else:
         gnf8.append(input_path)
 
@@ -507,12 +512,17 @@ def process_13():
     )
     output_path = output + "/CMS_TTBAR_13TEV_2L_DIF_YTTBAR" + new_suffix
     if os.path.exists(input_path):
+
+        subprocess.run(default + yttbar + [input_path, output_path])
+        integrate_grid(output_path, '1d')
+        subprocess.run(["rm", output_path])
+
         subprocess.run(
             ["python", "./matrix_yttbar.py", "-g", input_path, "-o", intermediate_path]
         )
         subprocess.run(default + yttbar + [intermediate_path + new_suffix, output_path])
         subprocess.run(["rm", intermediate_path + new_suffix])
-        # integrate_grid(output_path, '1d')
+
     else:
         gnf13.append(input_path)
 
