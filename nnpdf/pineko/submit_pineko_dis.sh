@@ -1,0 +1,100 @@
+#!/bin/bash
+
+THEORY_LIST=(
+# ADD YOUR THEORY IDS HERE
+)
+
+# or generate THEORY LIST in a loop
+#THEORY_LIST=()
+#for i in {0..11}; do
+#  for j in 0 1 2 3 4 5 6; do
+#    THEORY_LIST+=($((4001900000 + i * 100 + j)))
+#  done
+#done
+
+
+DISTRIBUTION_LIST_DIS=(
+"NNPDF_FIATLUX_NOTFIXED_F2"
+"NNPDF_FIATLUX_NOTFIXED_FL"
+"NMC_NC_NOTFIXED_EM-F2"
+"NMC_NC_NOTFIXED_P_EM-SIGMARED"
+"SLAC_NC_NOTFIXED_P_EM-F2"
+"SLAC_NC_NOTFIXED_D_EM-F2"
+"BCDMS_NC_NOTFIXED_P_EM-F2"
+"BCDMS_NC_NOTFIXED_D_EM-F2"
+"CHORUS_CC_NOTFIXED_PB_NU-SIGMARED"
+"CHORUS_CC_NOTFIXED_PB_NB-SIGMARED"
+"NUTEV_CC_NOTFIXED_FE_NU-SIGMARED"
+"NUTEV_CC_NOTFIXED_FE_NB-SIGMARED"
+"HERA_NC_318GEV_EM-SIGMARED"
+"HERA_NC_225GEV_EP-SIGMARED"
+"HERA_NC_251GEV_EP-SIGMARED"
+"HERA_NC_300GEV_EP-SIGMARED"
+"HERA_NC_318GEV_EP-SIGMARED"
+"HERA_CC_318GEV_EM-SIGMARED"
+"HERA_CC_318GEV_EP-SIGMARED"
+"HERA_NC_318GEV_EAVG_CHARM-SIGMARED"
+"HERA_NC_318GEV_EAVG_BOTTOM-SIGMARED"
+)
+
+# Define the wrapper script for running smefit
+WRAPPER_SCRIPT="run_pineko_dis.sh"
+
+# Create the wrapper script
+cat <<EOL > $WRAPPER_SCRIPT
+#!/bin/bash
+# Wrapper script for executing pineko
+
+THEORY=\$1
+DISTRIBUTION=\$2
+
+pineko theory opcards \$THEORY \$DISTRIBUTION --overwrite
+pineko theory ekos \$THEORY \$DISTRIBUTION --overwrite
+pineko theory fks \$THEORY \$DISTRIBUTION --overwrite
+EOL
+
+# Make the wrapper script executable
+chmod +x $WRAPPER_SCRIPT
+
+# Create the HTCondor submit description file
+cat <<EOL > submit_pineko_dis.submit
+# HTCondor submit file
+
+universe = vanilla
+executable = $WRAPPER_SCRIPT
+
+# Transfer input files (the runcards)
+arguments = \$(Item1) \$(Item2)
+
++UseOS                  = "el9"
++JobCategory            = "medium"
+request_cpus   = 32
+request_memory = 128G
+getenv = true
+accounting_group = smefit
+
+# Define log, output, and error files
+log = logs/\$(Cluster)_\$(Process).log
+output = logs/\$(Cluster)_\$(Process).out
+error = logs/\$(Cluster)_\$(Process).err
+
+max_idle = 20
+
+# Queue jobs for each runcard
+queue Item1, Item2 from (
+EOL
+
+# Append runcard list to the submit file
+for THEORY in "${THEORY_LIST[@]}"; do
+  for DIST in "${DISTRIBUTION_LIST_DIS[@]}"; do
+
+    echo "$THEORY $DIST" >> submit_pineko_dis.submit
+  done
+done
+
+echo ")" >> submit_pineko_dis.submit
+
+# Submit the jobs
+#condor_submit submit_pineko.submit
+
+
