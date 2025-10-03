@@ -1,0 +1,24 @@
+# HTCondor submit file
+
+universe = vanilla
+executable = run_smefit.sh
+
+# Transfer input files (the runcards)
+arguments = $(Item)
+
++UseOS                  = "el9"
++JobCategory            = "short"
+request_memory = 4G
+request_cpus = 1
+
+accounting_group = smefit
+
+# Define log, output, and error files
+log = logs/$(Cluster)_$(Process).log
+output = logs/$(Cluster)_$(Process).out
+error = logs/$(Cluster)_$(Process).err
+
+# Queue jobs for each runcard
+queue Item from (
+<runcard.yaml>
+)
